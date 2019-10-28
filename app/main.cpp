@@ -23,13 +23,13 @@
 */
 
 #include <QDebug>
-#include <QGuiApplication>
+#include <QApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 #include <QTimer>
 #include <QtAndroid>
 
-#include <gammaray/common/endpoint.h>
+#include <gammaray/core/server.h>
 
 Q_DECL_EXPORT int main(int argc, char **argv)
 {
@@ -39,13 +39,17 @@ Q_DECL_EXPORT int main(int argc, char **argv)
 
     QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QGuiApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
-    QGuiApplication app(argc, argv);
+    QApplication app(argc, argv); // QApplication, so we get the QStyle tool
     QQmlApplicationEngine engine;
     engine.load(QStringLiteral("qrc:/main.qml"));
 
     // give the GammaRay probe time to initialize networking
-    QTimer::singleShot(0, &app, [&engine]() {
-        engine.rootContext()->setContextProperty("_serverAddress", GammaRay::Endpoint::instance()->serverAddress().toString());
+    QTimer::singleShot(10, &app, [&engine]() {
+        const auto server = qobject_cast<GammaRay::Server*>(GammaRay::Endpoint::instance());
+        engine.rootContext()->setContextProperty("_serverAddress", server->externalAddress().toString());
+        QObject::connect(server, &GammaRay::Server::externalAddressChanged, &engine, [server, &engine]() {
+            engine.rootContext()->setContextProperty("_serverAddress", server->externalAddress().toString());
+        });
     });
 
     QtAndroid::hideSplashScreen();

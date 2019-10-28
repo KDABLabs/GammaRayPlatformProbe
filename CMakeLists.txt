@@ -8,7 +8,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 include(FeatureSummary)
 
-find_package(GammaRay 2.11.0 REQUIRED NO_MODULE)
+find_package(GammaRay 2.11.50 REQUIRED NO_MODULE)
 set_package_properties(GammaRay PROPERTIES
     TYPE REQUIRED
     URL "http://www.kdab.com/gammaray"
@@ -16,7 +16,13 @@ set_package_properties(GammaRay PROPERTIES
     PURPOSE "Needed to build Android GammaRay plug-in."
 )
 
-find_package(Qt5 REQUIRED COMPONENTS AndroidExtras Quick)
+find_package(Qt5 REQUIRED COMPONENTS
+    AndroidExtras
+    Bluetooth
+    Quick
+    Positioning
+    Sensors
+)
 
 add_subdirectory(app)
 

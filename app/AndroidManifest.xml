@@ -48,6 +48,7 @@
             <meta-data android:name="android.app.auto_screen_scale_factor" android:value="true"/>
         </activity>
         <meta-data android:name="com.kdab.gammaray.ServerAddress" android:value="tcp://0.0.0.0:11732"/>
+        <meta-data android:name="com.kdab.gammaray.DisabledPlugins" android:value="gammaray_actioninspector;gammaray_eventmonitor;gammaray_modelinspector;gammaray_sceneinspector;gammaray_signalmonitor;gammaray_textdocumentinspector;gammaray_timertop;gammaray_translationinspector;gammaray_webinspector;gammaray_widgetinspector;GammaRay::MetaObjectBrowser;GammaRay::MetaTypeBrowser;GammaRay::ProblemReporter"/>
     </application>
 
     <uses-sdk android:minSdkVersion="21" android:targetSdkVersion="28"/>
