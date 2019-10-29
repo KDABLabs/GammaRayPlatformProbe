@@ -1,0 +1,10 @@
+*.kdev4
+*~
+*.rej
+*.orig
+*.out
+CMakeSettings.json
+CMakeLists.txt.user
+*.qmlc
+callgrind.out.*
+perf.data*

@@ -24,19 +24,27 @@
 
 import QtQuick 2.5
 import QtQuick.Layouts 1.1
-import QtQuick.Controls 2.5 as QQC2
+import QtQuick.Controls 2.10
+import QtQuick.Controls.Material 2.10
 
-QQC2.ApplicationWindow
+import com.kdab.gammaray.PlatformProbe 1.0
+
+ApplicationWindow
 {
     visible: true
+
+    Material.theme: Material.Light
+    Material.accent: "#0077c8" // KDAB blue
+
+    readonly property int __margin: 16
 
     header: Rectangle {
         anchors.left: parent.left
         anchors.right: parent.right
-        height: headerLabel.implicitHeight + 20
-        color: "#0077c8"
+        height: headerLabel.implicitHeight + 2 * __margin
+        color: Material.accent
 
-        QQC2.Label {
+        Label {
             id: headerLabel
             anchors.centerIn: parent
             text: qsTr("GammaRay Platform Probe")
@@ -52,15 +60,30 @@ QQC2.ApplicationWindow
     }
 
     ColumnLayout {
-        anchors.centerIn: parent
+        anchors.fill: parent
+        anchors.margins: __margin
 
-        QQC2.Label {
-            text: qsTr("Address: ") + _serverAddress;
+        Label {
+            text: qsTr("Address: ") + Controller.serverAddress
         }
 
-        QQC2.Button {
+        Button {
+            id: gpsButton
+            Layout.fillWidth: true
+            text: qsTr("Enable GPS")
+            onClicked: {
+                Controller.enableGPS();
+                gpsButton.enabled = false;
+            }
+        }
+
+        Item { Layout.fillHeight: true }
+
+        Button {
+            Layout.fillWidth: true
             text: qsTr("Exit")
             onClicked: Qt.quit();
+            Material.background: Material.Red
         }
     }
 }

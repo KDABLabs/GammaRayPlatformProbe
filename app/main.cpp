@@ -24,12 +24,71 @@
 
 #include <QDebug>
 #include <QApplication>
+#include <QGeoPositionInfoSource>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 #include <QTimer>
 #include <QtAndroid>
 
 #include <gammaray/core/server.h>
+
+class Controller : public QObject
+{
+    Q_OBJECT
+    Q_PROPERTY(QString serverAddress READ serverAddress NOTIFY serverAddressChanged)
+
+public:
+    explicit Controller(QObject *parent = nullptr);
+    QString serverAddress() const;
+
+    Q_INVOKABLE void enableGPS();
+
+signals:
+    void serverAddressChanged();
+
+private:
+    void setupGPS();
+};
+
+Controller::Controller(QObject *parent)
+    : QObject(parent)
+{
+    // give the GammaRay probe time to initialize networking
+    QTimer::singleShot(0, this, [this]() {
+        const auto server = qobject_cast<GammaRay::Server*>(GammaRay::Endpoint::instance());
+        QObject::connect(server, &GammaRay::Server::externalAddressChanged, this, &Controller::serverAddressChanged);
+    });
+}
+
+QString Controller::serverAddress() const
+{
+    const auto server = qobject_cast<GammaRay::Server*>(GammaRay::Endpoint::instance());
+    if (!server) {
+        return {};
+    }
+    return server->externalAddress().toString();
+}
+
+void Controller::enableGPS()
+{
+    if (QtAndroid::checkPermission("android.permission.ACCESS_FINE_LOCATION") == QtAndroid::PermissionResult::Granted) {
+        setupGPS();
+        return;
+    }
+
+    QtAndroid::requestPermissions({"android.permission.ACCESS_FINE_LOCATION"}, [this] (const QtAndroid::PermissionResultMap &result) {
+        if (result["android.permission.ACCESS_FINE_LOCATION"] == QtAndroid::PermissionResult::Granted) {
+            setupGPS();
+        }
+    });
+}
+
+void Controller::setupGPS()
+{
+    auto source = QGeoPositionInfoSource::createDefaultSource(this);
+    source->startUpdates();
+}
+
 
 Q_DECL_EXPORT int main(int argc, char **argv)
 {
@@ -40,18 +99,16 @@ Q_DECL_EXPORT int main(int argc, char **argv)
     QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QGuiApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
     QApplication app(argc, argv); // QApplication, so we get the QStyle tool
+
+    qmlRegisterSingletonType<Controller>("com.kdab.gammaray.PlatformProbe", 1, 0, "Controller", [](QQmlEngine*, QJSEngine*) -> QObject* {
+        return new Controller;
+    });
+
     QQmlApplicationEngine engine;
     engine.load(QStringLiteral("qrc:/main.qml"));
-
-    // give the GammaRay probe time to initialize networking
-    QTimer::singleShot(10, &app, [&engine]() {
-        const auto server = qobject_cast<GammaRay::Server*>(GammaRay::Endpoint::instance());
-        engine.rootContext()->setContextProperty("_serverAddress", server->externalAddress().toString());
-        QObject::connect(server, &GammaRay::Server::externalAddressChanged, &engine, [server, &engine]() {
-            engine.rootContext()->setContextProperty("_serverAddress", server->externalAddress().toString());
-        });
-    });
 
     QtAndroid::hideSplashScreen();
     return app.exec();
 }
+
+#include "main.moc"
