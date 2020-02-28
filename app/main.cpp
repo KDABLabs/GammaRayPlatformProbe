@@ -98,6 +98,8 @@ void Controller::setupGPS()
 
 Q_DECL_EXPORT int main(int argc, char **argv)
 {
+    qputenv("GAMMARAY_DisabledPlugins", "gammaray_3dinspector;gammaray_actioninspector;gammaray_eventmonitor;gammaray_kjobtracker;gammaray_modelinspector;gammaray_sceneinspector;gammaray_scriptenginedebugger;gammaray_signalmonitor;gammaray_statemachineviewer;gammaray_textdocumentinspector;gammaray_timertop;gammaray_translationinspector;gammaray_webinspector;gammaray_widgetinspector;gammaray_wlcompositorinspector;GammaRay::MetaObjectBrowser;GammaRay::MetaTypeBrowser;GammaRay::ProblemReporter");
+
     QCoreApplication::setApplicationName(QStringLiteral("GammaRay Platform Probe"));
     QCoreApplication::setOrganizationName(QStringLiteral("KDAB"));
     QCoreApplication::setOrganizationDomain(QStringLiteral("kdab.com"));
