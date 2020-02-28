@@ -17,12 +17,14 @@ set_package_properties(GammaRay PROPERTIES
 )
 
 find_package(Qt5 REQUIRED COMPONENTS
-    AndroidExtras
     Bluetooth
     Quick
     Positioning
     Sensors
 )
+if (ANDROID)
+    find_package(Qt5AndroidExtras REQUIRED)
+endif()
 
 add_subdirectory(app)
 

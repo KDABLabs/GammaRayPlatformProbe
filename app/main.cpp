@@ -28,7 +28,9 @@
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 #include <QTimer>
+#ifdef Q_OS_ANDROID
 #include <QtAndroid>
+#endif
 
 #include <gammaray/core/server.h>
 
@@ -71,6 +73,7 @@ QString Controller::serverAddress() const
 
 void Controller::enableGPS()
 {
+#ifdef Q_OS_ANDROID
     if (QtAndroid::checkPermission("android.permission.ACCESS_FINE_LOCATION") == QtAndroid::PermissionResult::Granted) {
         setupGPS();
         return;
@@ -81,6 +84,9 @@ void Controller::enableGPS()
             setupGPS();
         }
     });
+#else
+    setupGPS();
+#endif
 }
 
 void Controller::setupGPS()
@@ -107,7 +113,9 @@ Q_DECL_EXPORT int main(int argc, char **argv)
     QQmlApplicationEngine engine;
     engine.load(QStringLiteral("qrc:/main.qml"));
 
+#ifdef Q_OS_ANDROID
     QtAndroid::hideSplashScreen();
+#endif
     return app.exec();
 }
 
