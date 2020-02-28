@@ -98,7 +98,7 @@ void Controller::setupGPS()
 
 Q_DECL_EXPORT int main(int argc, char **argv)
 {
-    QCoreApplication::setApplicationName(QStringLiteral("GammaRay Android Platform Probe"));
+    QCoreApplication::setApplicationName(QStringLiteral("GammaRay Platform Probe"));
     QCoreApplication::setOrganizationName(QStringLiteral("KDAB"));
     QCoreApplication::setOrganizationDomain(QStringLiteral("kdab.com"));
 
