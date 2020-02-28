@@ -32,6 +32,9 @@ import com.kdab.gammaray.PlatformProbe 1.0
 ApplicationWindow
 {
     visible: true
+    title: qsTr("GammaRay Platform Probe")
+    width: 480
+    height: 720
 
     Material.theme: Material.Light
     Material.accent: "#0077c8" // KDAB blue
